@@ -1,0 +1,17 @@
+{% extends 'index.htm' %}
+
+{% block head %}
+<title>Update purchase</title>
+{% endblock %}
+
+{% block body %}
+<h1>Update purchase</h1>
+
+<form action="/update/{{ purchase.id }}" method="POST">
+    <input type="text" name="name" value="{{ purchase.name }}">
+    <input type="number" name="quantity" value="{{ purchase.quantity }}">
+    <input type="number" name="price" value="{{ purchase.price }}">
+    <input type="text" name="category" value="{{ purchase.category }}">
+    <button type="submit">Save</button>
+</form>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'index.htm' %}
+
+{% block head %}
+<title>add purchase</title>
+{%  endblock %}
+
+{% block body %}
+<h1>add purchase</h1>
+<form action="/add"  method="POST">
+    <input type="text" name="id" placeholder="enter purchase id">
+    <input type="text" name="name" placeholder="enter product name">
+    <input type="number" name="quantity" placeholder="enter quantity">
+    <input type="number" name="price" placeholder="enter product price">
+    <input type="text" name="category" placeholder="enter purchase category">
+    <input type="text" name="date" placeholder="enter purchase date">
+    <input type="submit" value="add purchase">
+</form>
+
+{%  endblock %}
+
