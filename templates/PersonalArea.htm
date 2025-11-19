@@ -42,5 +42,9 @@
 
 <a href="/add" class="btn">Add Purchase</a>
 <a href="{{ url_for('show_more', limit=limit+5) }}" class="btn">Load More</a>
+<form action="/save_csv" method="get">
+    <button type="submit">Download CSV</button>
+</form>
+
 
 {% endblock %}

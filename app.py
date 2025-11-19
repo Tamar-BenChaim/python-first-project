@@ -1,8 +1,9 @@
 from flask import Flask , render_template , redirect , session, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-from flask import request
-import os
+from flask import request , send_file, Response
+import pandas as pd
+import os , io
 
 
 app = Flask(__name__)
@@ -149,6 +150,30 @@ def show_more(limit):
     user_id = session["user_id"]
     user_purchases = Purchase.query.filter_by(user_id=user_id).order_by(Purchase.id.desc()).limit(limit).all()
     return render_template("PersonalArea.htm", purchases=user_purchases, limit=limit)
+
+@app.route("/save_csv")
+def save_to_csv():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    user_id = session["user_id"]
+    purchases = Purchase.query.filter_by(user_id=user_id).all()
+
+    df = pd.DataFrame([p.__dict__ for p in purchases])
+    if "_sa_instance_state" in df.columns:
+        df.drop(columns=["_sa_instance_state"], inplace=True)
+
+    csv_buffer = io.StringIO()
+    df.to_csv(csv_buffer, index=False)
+    csv_buffer.seek(0)
+
+    return Response(
+        csv_buffer,
+        mimetype="text/csv",
+        headers={"Content-Disposition": f"attachment;filename=purchases_{user_id}.csv"}
+    )
+
+
 
 def init_db():
     with app.app_context():
