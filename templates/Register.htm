@@ -6,6 +6,7 @@
 
 {% block body %}
 <h1>Register</h1>
+<div class="center">
 <form action="/register"  method="POST">
     <input type="text" name="id" placeholder="enter user id">
     <input type="text" name="email" placeholder="enter email">
@@ -13,5 +14,5 @@
     <input type="text" name="password2" placeholder="enter password again">
     <input type="submit" value="register">
 </form>
-
+</div>
 {%  endblock %}

@@ -7,6 +7,7 @@
 {% block body %}
 
 <h1>Your purchases list</h1>
+<div class="center">
 <table cellspacing="0" cellpadding="5">
     <tr>
         <th>id</th>
@@ -39,9 +40,9 @@
     </tr>
     {% endfor %}
 </table>
+<a href="{{ url_for('show_more', limit=limit+5) }}" class="btn">Load More</a>
 
 <a href="/add" class="btn">Add Purchase</a>
-<a href="{{ url_for('show_more', limit=limit+5) }}" class="btn">Load More</a>
 <form action="/save_csv" method="get">
     <button type="submit">Download CSV</button>
 </form>
@@ -62,5 +63,5 @@
         menu.style.display = menu.style.display === "none" ? "block" : "none";
     }
 </script>
-
+</div>
 {% endblock %}

@@ -6,10 +6,11 @@
 
 {% block body %}
 <h1>login</h1>
+<div class="center">
 <form action="/login"  method="POST">
     <input type="text" name="email" placeholder="enter email">
     <input type="text" name="password" placeholder="enter password">
     <input type="submit" value="login">
 </form>
-
+</div>
 {%  endblock %}
