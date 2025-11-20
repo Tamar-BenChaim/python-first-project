@@ -46,5 +46,21 @@
     <button type="submit">Download CSV</button>
 </form>
 
+<button onclick="toggleMenu()">Choose graph</button>
+
+<div id="graphMenu">
+    <form action="/graph1" method="get">
+        <button type="submit">📊 Expenses per Month</button>
+    </form>
+    <form action="/graph2" method="get">
+        <button type="submit">📅 Expenses per Category</button>
+    </form>
+</div>
+<script>
+    function toggleMenu() {
+        const menu = document.getElementById("graphMenu");
+        menu.style.display = menu.style.display === "none" ? "block" : "none";
+    }
+</script>
 
 {% endblock %}

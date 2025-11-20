@@ -1,0 +1,44 @@
+{% extends 'index.htm' %}
+
+{% block head %}
+<title>purchases list</title>
+{% endblock %}
+
+{% block body %}
+
+<h1>Your purchases list</h1>
+<table cellspacing="0" cellpadding="5">
+    <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>quantity</th>
+        <th>price</th>
+        <th>category</th>
+        <th>date</th>
+        <th>Delete</th>
+        <th>Update</th>
+    </tr>
+    {% for p in purchases [:limit]%}
+    <tr>
+        <td>{{p.id}}</td>
+        <td>{{p.name}}</td>
+        <td>{{p.quantity}}</td>
+        <td>{{p.price}}</td>
+        <td>{{p.category}}</td>
+        <td>{{p.date}}</td>
+        <td>
+            <form action="/demomessage"  style="display:inline">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+        <td>
+            <form action="/demomessage" style="display:inline">
+                <button type="submit">Update</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<a href="{{ url_for('show_more_demo', limit=limit+5) }}" class="btn">Load More</a>
+
+{% endblock %}

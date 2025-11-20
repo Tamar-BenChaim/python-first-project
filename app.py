@@ -4,7 +4,9 @@ from datetime import datetime
 from flask import request , send_file, Response
 import pandas as pd
 import os , io
+import matplotlib.pyplot as plt
 
+demoArr=None
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///purchases.db"
@@ -32,7 +34,7 @@ app.secret_key = "abc123"
 
 @app.route("/")
 def home():
-    return "Hello!"
+    return render_template("home.htm")
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -87,17 +89,19 @@ def show_purchases():
     user_purchases = Purchase.query.filter_by(user_id=user_id).order_by(Purchase.id.desc()).limit(limit).all() 
     return render_template("PersonalArea.htm", purchases=user_purchases,limit=limit)
 
-
 @app.route("/add", methods=["GET", "POST"])
 def add_purchase():
     if request.method == "POST":
         if "user_id" not in session:
            return redirect("/login")
+        date_str = request.form['date']               
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
         item = Purchase(
             name=request.form["name"],
             quantity=request.form["quantity"],
             price=request.form["price"],
             category=request.form["category"],
+            date=date_obj,
             user_id=session["user_id"]
         )
         db.session.add(item)
@@ -172,6 +176,96 @@ def save_to_csv():
         mimetype="text/csv",
         headers={"Content-Disposition": f"attachment;filename=purchases_{user_id}.csv"}
     )
+
+@app.route("/graph1")
+def show_graph1():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    user_id = session["user_id"]
+    purchases = Purchase.query.filter_by(user_id=user_id).all()
+
+    df = pd.DataFrame([p.__dict__ for p in purchases])
+    if "_sa_instance_state" in df.columns:
+        df.drop(columns=["_sa_instance_state"], inplace=True)
+
+    df['date'] = pd.to_datetime(df['date'])
+    df['month'] = df['date'].dt.to_period('M')
+    monthly = df.groupby('month')['quantity'].sum()
+    plt.figure(figsize=(8,5))
+    plt.bar(monthly.index.astype(str), monthly.values)
+    plt.title("sum of the expenses every month")
+    plt.xlabel("month")
+    plt.ylabel("sum of the expenses")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    plt.close()
+
+    return Response(img.getvalue(), mimetype='image/png')
+
+@app.route("/graph2")
+def show_graph2():
+    if "user_id" not in session:
+        return redirect("/login")
+
+    user_id = session["user_id"]
+    purchases = Purchase.query.filter_by(user_id=user_id).all()
+
+    df = pd.DataFrame([p.__dict__ for p in purchases])
+    if "_sa_instance_state" in df.columns:
+        df.drop(columns=["_sa_instance_state"], inplace=True)
+
+    category_sum = df.groupby("category")["price"].sum()
+    plt.figure(figsize=(7,7))
+    plt.pie(
+        category_sum,
+        labels=category_sum.index,
+        autopct="%1.1f%%",
+        startangle=140
+    )
+    plt.title("Expenses by Category")
+    plt.tight_layout()
+
+    img = io.BytesIO()
+    plt.savefig(img, format='png')
+    img.seek(0)
+    plt.close()
+
+    return Response(img.getvalue(), mimetype='image/png')
+
+@app.route("/demoProfile") 
+def show_demo():
+    global demoArr
+    demoArr=[{id:100,"name":"bread","quantity":2,"price":8,"category":"food","date":"20-02-2020"},
+    {id:100,"name":"bread","quantity":1,"price":8,"category":"food","date":"20-06-2020"},
+    {id:101,"name":"milk","quantity":3,"price":6,"category":"food","date":"20-02-2020"},
+    {id:102,"name":"table","quantity":2,"price":300,"category":"furniture","date":"20-02-2020"},
+    {id:103,"name":"chair","quantity":4,"price":100,"category":"furniture","date":"20-02-2020"},
+    {id:104,"name":"bread","quantity":2,"price":8,"category":"food","date":"20-02-2020"},
+    {id:105,"name":"milk","quantity":1,"price":6,"category":"food","date":"20-02-2020"},
+    {id:106,"name":"bread","quantity":1,"price":8,"category":"food","date":"20-02-2020"},
+    {id:107,"name":"chair","quantity":2,"price":80,"category":"furniture","date":"20-02-2020"}]
+    return render_template("demoProfile.htm", purchases=demoArr,limit=5)
+
+@app.route("/moredemo/<int:limit>")
+def show_more_demo(limit):
+    global demoArr
+    return render_template("demoProfile.htm", purchases=demoArr,limit=limit)
+
+@app.route("/demomessage")
+def demo_message():
+    return '''
+    <h1>Demo Mode</h1>
+    <h2>You are currently in demo mode.</h2>
+    <h2>To proceed, please 
+        <a href="/register">register</a> or 
+        <a href="/login">login</a>.
+    </h2>
+    '''
 
 
 

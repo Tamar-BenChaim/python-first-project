@@ -1,0 +1,22 @@
+{% extends 'index.htm' %}
+
+{% block head %}
+<title>home</title>
+{%  endblock %}
+
+{% block body %}
+<h1>Welcome to the purchases website</h1>
+<h2>Here you can fill out and track your purchases</h2>
+<div id="links">
+    <form action="/demoProfile" method="get">
+        <button type="submit">Show me the app</button>
+    </form>
+    <form action="/register" method="get">
+        <button type="submit">Register</button>
+    </form>
+    <form action="/login" method="get">
+        <button type="submit">login</button>
+    </form>
+</div>
+
+{%  endblock %}
